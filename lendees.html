@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lobster&family=Raleway:wght@200&family=Secular+One&display=swap" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="input">
+            First Name: <input type="text" name="" id="fname">
+            Last Name: <input type="text" name="" id="lname">
+            Contact: <input type="text" name="" id="contact">
+            Address: <input type="text" name="" id="address">
+
+            <button class="btn btn-success float-end mt-3 p-3" id="save_btn"> <i class="fa fa-plus"></i> Add</button>
+        </div>
+      
+
+        <div class="content">
+      
+            <div class="head">
+                
+                <a href="books.html" class="float-end btn btn-danger p-3"> <i class="fa fa-book"></i> Book</a>
+                <h1>Lendee</h1>
+            </div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>FirstName</th>
+                        <th>LastName</th>
+                        <th>Number</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                    <tr>
+                        
+                    </tr>
+
+                <tbody id="lendees">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    function getAllLendees() {
+         fetch("http://localhost:8000/api/lendees")
+           .then(response=>{
+             if(response.status==200) {
+               response.json()
+                 .then(data=>{
+                  renderLendeeTable(data.lendee)
+                  
+                 })
+             }
+           })
+       }
+ 
+     function renderLendeeTable(lendees){
+         const tbody = $("#lendees")
+ 
+ 
+         lendees.forEach((len)=>{
+             const tr = $(document.createElement("tr"))
+             tr.append("<td class='text-black'>" + len.id + "</td>")
+             tr.append("<td class='text-black'>" + len.fname + "</td>")
+             tr.append("<td class='text-black'>" + len.lname + "</td>")
+             tr.append("<td class='text-black'>" + len.contact + "</td>")
+             tr.append("<td class='text-black'>" + len.address + "</td>")
+             tr.append("<td class='text-center text-black'><a href='showLendee.html?id=" + len.id + "' class='btn btn-sm btn-success'><i class='fa-solid fa-eye'></i> &nbsp; View</a>")
+             tbody.append(tr)
+         })
+     }
+ 
+     function prependLendee(len){
+         const tbody = $("#lendees")
+ 
+         const tr = $(document.createElement("tr"))
+         tr.append("<td class='text-bg-primary'>" + len.id + "</td>")
+         tr.append("<td class='text-bg-primary'>" + len.fname + "</td>")
+         tr.append("<td class='text-bg-primary'>" + len.lname + "</td>")
+         tr.append("<td class='text-bg-primary'>" + len.contact + "</td>")
+         tr.append("<td class='text-bg-primary'>" + len.address + "</td>")
+         tr.append("<td class='text-bg-primary text-center'><a href='showLendee.html?id=" + len.id + "' class='btn btn-sm btn-danger'><i class='fa-solid fa-eye'></i> &nbsp; View</a>")
+            
+         tbody.prepend(tr)
+     }
+ 
+ 
+     function clearForm() {
+         $("#fname").val()
+         $("#lname").val()
+         $("#contact").val()
+         $("#address").val()
+
+       }
+ 
+       $(document).ready(()=>{
+         getAllLendees()
+ 
+         $("#save_btn").click(()=>{
+           const data = {
+          
+             "fname":$("#fname").val(),
+             "lname":$("#lname").val(),
+             "contact":$("#contact").val(),
+             "address":$("#address").val(),
+
+  
+           }
+ 
+           fetch("http://localhost:8000/api/lendees",{
+             "credentials": "omit",
+             "method": "POST",
+             "body": JSON.stringify(data),
+             "headers":{
+               'Accept':'application/json',
+               'Content-Type':'application/json'
+             }
+           }).then(response=>{
+             if(response.status==200) {
+               response.json()
+                 .then(data=>prependLendee(data))
+             }
+           })
+
+         })
+       })
+
+ </script>
+<style>
+    .input{
+        font-size: 35px;
+        
+    }
+    .table{
+        margin-top: 50px;
+        box-shadow: 30px 30px 20px 2px rgba(0, 0, 0, 0.502);
+    }
+    .head{
+        color: black;
+        padding: 20px;
+        background-color: rgb(172, 203, 231);
+        box-shadow: 30px 30px 20px 2px rgba(0, 0, 0, 0.502);
+    }
+    .content{
+        
+        margin: 50px;
+    }
+    .container{
+        margin-top: 30px;
+        display: flex;
+        place-content: center;
+        font-size: 50px;
+    }
+    body{
+        background-color: rgb(18, 55, 82);
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+</style>
+</html>

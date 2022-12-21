@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Lobster&family=Raleway:wght@200&family=Secular+One&display=swap" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="input">
+                First Name: <input type="text" name="" id="fname" class="form-control"> <br>
+                Last Name: <input type="text" name="" id="lname" class="form-control"> <br>
+                Contact: <input type="text" name="" id="contact" class="form-control"> <br>
+                Address: <input type="text" name="" id="address" class="form-control"> <br>
+                <a id="confirm_delete_lendee" class="btn btn-danger float-end mt-3 p-3" id="save_btn"> <i class="fa fa-remove"></i> Delete</a>
+                <a id="confirm_update_lendee" class="btn btn-success float-end mt-3 p-3 me-3" id="save_btn"> <i class="fa fa-plus"></i> Update</a>
+             
+
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function getLendees(id) {
+        fetch('http://localhost:8000/api/lendees/' + id)
+          .then(response=>{
+            if(response.status==200) {
+              response.json()
+                .then(data=>renderLendee(data))
+            }
+          })
+      }
+
+      $(document).ready(()=>{
+        const urlParams = new URLSearchParams(window.location.search);
+        const param_id = urlParams.get('id');
+
+        getLendees(param_id)
+
+        $("#confirm_update_lendee").click(()=>{
+          const data = {
+            "fname":$("#fname").val(),
+            "lname":$("#lname").val(),
+            "contact":$("#contact").val(),
+            "address":$("#address").val(),
+
+         
+          }
+          fetch('http://localhost:8000/api/lendees/' + param_id,{
+            credentials: "omit",
+            method:"PUT",
+            body: JSON.stringify(data),
+            headers : {
+              "Accept":"application/json",
+              "Content-Type":"application/json"
+            }
+          }).then(response=>{
+            if(response.status==200) {
+              window.location='lendees.html'
+            }
+          })
+        })
+
+        $("#confirm_delete_lendee").click(()=>{
+          fetch('http://localhost:8000/api/lendees/' + param_id,{
+            credentials:"omit",
+            method: "DELETE",
+            headers: {
+              'Accept':'application/json'
+            }
+          }).then(response=>{
+            if(response.status==200) {
+              window.location='lendees.html'
+              alert("Deleting Lendee, click 'OK' to proceed")
+            }
+            if(response.status==500) {
+              alert("This Lendee has existing Book data")
+            }
+          })
+        })
+      })
+
+ </script>
+<style>
+    .input{
+        font-size: 35px;
+        width: 500px;
+    
+    }
+    .head{
+        color: black;
+        padding: 20px;
+        background-color: rgb(172, 203, 231);
+        box-shadow: 30px 30px 20px 2px rgba(0, 0, 0, 0.502);
+    }
+    .content{
+        
+        margin: 50px;
+    }
+    .container{
+        margin-top: 30px;
+        display: flex;
+        place-content: center;
+        font-size: 50px;
+    }
+    body{
+        background-color: rgb(18, 55, 82);
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+</style>
+</html>
